@@ -43,6 +43,21 @@ public class Shiplacer {
 
         }
     }
+    public int getStartRow() {
+        return startRow;
+    }
+
+    public int getStartCol() {
+        return startCol;
+    }
+
+    public int getEndRow() {
+        return endRow;
+    }
+
+    public int getEndCol() {
+        return endCol;
+    }
 
     public boolean sunk() {
 
