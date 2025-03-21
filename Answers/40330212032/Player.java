@@ -53,6 +53,9 @@ if(opponentGird[row][col]=='S'){
 
     }
 
+    public Shiplacer[] getShips() {
+        return ships;
+    }
 
 
 }
