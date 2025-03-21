@@ -19,7 +19,7 @@ public class Board {
     }
 
     public void printBoard() {
-        System.out.println("  ");
+        System.out.print("  ");
         for (int i = 0; i < size; i++) {
             System.out.print((char) ('A' + i) + ' ');
 
