@@ -52,7 +52,7 @@ public class Game {
         System.out.println(player.getName() + " Determine the location for the target.");
 
         for (int i = 0; i < player.getShips().length; i++) {
-            System.out.println("Enter the starting row, starting col, and ship size:");
+            System.out.println("Enter the starting row, starting col,(V=عمودی)(H=افقی), and ship size:");
             int startRow = scanner.nextInt();
             int startCol = scanner.nextInt();
             String direction = scanner.next();
