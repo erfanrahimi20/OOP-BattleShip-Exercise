@@ -1,71 +1,93 @@
 import java.util.Scanner;
+
 public class Game {
 
-        private Player player1;
-        private AIPlayer player2;
-        private boolean isGameOver;
+    private Player player1;
+    private Player player2;
+    private boolean isGameOver;
+    private boolean isTwoPlayerMode;
 
-        public Game(String player1Name, int boardSize, int maxShips) {
-            player1 = new Player(player1Name, new Board(boardSize), maxShips);
-            player2 = new AIPlayer("AI", boardSize, maxShips);
-            isGameOver = false;
+    public Game(String player1Name, String player2Name, int boardSize, int maxShips, boolean isTwoPlayerMode) {
+        this.player1 = new Player(player1Name, new Board(boardSize), maxShips);
+        this.isTwoPlayerMode = isTwoPlayerMode;
+
+        if (isTwoPlayerMode) {
+            this.player2 = new Player(player2Name, new Board(boardSize), maxShips);
+        } else {
+            this.player2 = new AIPlayer(player2Name, boardSize, maxShips);
         }
 
-        public void start() {
-            System.out.println("Welcome to Game!");
-            placeShips(player1);
-            player2.placeShipsRandomly();
+        this.isGameOver = false;
+    }
 
-            while (!isGameOver) {
-                playTurn(player1, player2);
-                if (player2.ifSunks()) {
-                    System.out.println(player1.getName() + " Wins!");
-                    isGameOver = true;
-                    break;
-                }
+    public void start() {
+        System.out.println("Welcome to BattleShip!");
 
-                playTurn(player2, player1);
-                if (player1.ifSunks()) {
-                    System.out.println("AI Wins!");
-                    isGameOver = true;
-                }
+        placeShips(player1);
+
+        if (isTwoPlayerMode) {
+            placeShips(player2);
+        } else {
+            ((AIPlayer) player2).placeShipsRandomly();
+        }
+
+        while (!isGameOver) {
+            playTurn(player1, player2);
+            if (player2.ifSunks()) {
+                System.out.println(player1.getName() + " Wins!");
+                isGameOver = true;
+                break;
+            }
+
+            playTurn(player2, player1);
+            if (player1.ifSunks()) {
+                System.out.println(player2.getName() + " Wins!");
+                isGameOver = true;
             }
         }
+    }
 
-        private void placeShips(Player player) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println(player.getName() + ", place your ships on the board.");
-            for (int i = 0; i < player.getShips().length; i++) {
-                System.out.println("Enter the starting row, starting col and your ships size:");
-                int startRow = scanner.nextInt();
-                int startCol = scanner.nextInt();
-                String direction = scanner.next();
-                int size = scanner.nextInt();
+    private void placeShips(Player player) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(player.getName() + " Determine the location for the target.");
 
-                int endRow = startRow;
-                int endCol = startCol;
+        for (int i = 0; i < player.getShips().length; i++) {
+            System.out.println("Enter the starting row, starting col, and ship size:");
+            int startRow = scanner.nextInt();
+            int startCol = scanner.nextInt();
+            String direction = scanner.next();
+            int size = scanner.nextInt();
 
-                if (direction.equalsIgnoreCase("H")) {
-                    endCol = startCol + size - 1;
-                } else if (direction.equalsIgnoreCase("V")) {
-                    endRow = startRow + size - 1;
-                }
+            int endRow = startRow;
+            int endCol = startCol;
 
-                Shiplacer ship = new Shiplacer(size);
-                ship.setLocation(startRow, startCol, endRow, endCol);
+            if (direction.equalsIgnoreCase("H")) {
+                endCol = startCol + size - 1;
+            } else if (direction.equalsIgnoreCase("V")) {
+                endRow = startRow + size - 1;
+            }
 
-                if (player.getBoard().canPlaceShip(ship)) {
-                    player.addShip(ship);
-                    System.out.println("Ship placed successfully!");
-                } else {
-                    System.out.println("Invalid position");
-                    i--;
-                }
+            Shiplacer ship = new Shiplacer(size);
+            ship.setLocation(startRow, startCol, endRow, endCol);
+
+            if (player.getBoard().canPlaceShip(ship)) {
+                player.addShip(ship);
+                System.out.println("Ship placed successfully!");
+            } else {
+                System.out.println("Invalid position.");
+                i--;
             }
         }
+    }
 
-        private void playTurn(Player currentPlayer, Player opponent) {
-            Scanner scanner = new Scanner(System.in);
+    private void playTurn(Player currentPlayer, Player opponent) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (currentPlayer instanceof AIPlayer) {
+            int[] move = ((AIPlayer) currentPlayer).makeMove();
+            System.out.println("AI attacking: (" + move[0] + ", " + move[1] + ")");
+            currentPlayer.attack(opponent, move[0], move[1]);
+        } else {
             System.out.println(currentPlayer.getName() + "'s turn. Enter row and col to attack:");
             int row = scanner.nextInt();
             int col = scanner.nextInt();
@@ -75,5 +97,6 @@ public class Game {
             }
         }
     }
+}
 
 
