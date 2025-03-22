@@ -72,7 +72,7 @@ public class Game {
 
             if (player.getBoard().canPlaceShip(ship)) {
                 player.addShip(ship);
-                System.out.println("Ship placed successfully!");
+                System.out.println("Ship placed successfully!!");
             } else {
                 System.out.println("Invalid position.");
                 i--;
