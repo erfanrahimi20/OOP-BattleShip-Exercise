@@ -23,17 +23,9 @@ public class AIPlayer extends Player {
             }
         }
     }
-    private boolean canPlaceShip(Shiplacer ship) {
-        char[][] grid = getBoard().getGrid();
-        for (int i = ship.getStartRow(); i <= ship.getEndRow(); i++) {
-            for (int j = ship.getStartCol(); j <= ship.getEndCol(); j++) {
-                if (grid[i][j] != ' ') {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+    public boolean canPlaceShip(Shiplacer ship) {
+        return getBoard().canPlaceShip(ship); }
+
 
 
     private void placeShipOnBoard(Shiplacer ship) {
