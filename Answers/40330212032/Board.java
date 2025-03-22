@@ -53,4 +53,20 @@ public int getSize(){
     public void setGrid(char[][] grid) {
         this.grid = grid;
     }
+    public boolean canPlaceShip(Shiplacer ship) {
+        char[][] grid = this.getGrid();
+        if (ship.getStartRow() < 0 || ship.getStartCol() < 0 ||
+                ship.getEndRow() >= grid.length || ship.getEndCol() >= grid[0].length) {
+            return false;
+        }
+        for (int i = ship.getStartRow(); i <= ship.getEndRow(); i++) {
+            for (int j = ship.getStartCol(); j <= ship.getEndCol(); j++) {
+                if (grid[i][j] != ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }
