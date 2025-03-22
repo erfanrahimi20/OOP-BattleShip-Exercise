@@ -1,7 +1,7 @@
 import java.util.Random;
 public class AIPlayer extends Player {
     private Random random;
-    public AIPlayer(String name, Board boardSize, int maxShips) {
+    public AIPlayer(String name, int boardSize, int maxShips) {
         super(name, boardSize, maxShips);
         this.random = new Random();
     }
