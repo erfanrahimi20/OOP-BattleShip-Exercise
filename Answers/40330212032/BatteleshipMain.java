@@ -4,39 +4,56 @@ public class BatteleshipMain {
 
 
 
-        public static  void main(String[] args) {
+        public static  void main(String[] args){
 
-            Display display = new Display();
-            Match match = new Match();
+                    Scanner scanner = new Scanner(System.in);
 
-            display.showTitle("BattleShip Game");
+                    System.out.println("Welcome to BattleShip!");
+                    System.out.println("Choose Game Mode: ");
+                    System.out.println("1_ Player and AI");
+                    System.out.println("2_ Player and Player");
 
-            Scanner scanner = new Scanner(System.in);
-            boolean isExiting = false;
+                    int choice = scanner.nextInt();
+                    scanner.nextLine();
 
-            while (!isExiting) {
+                    if (choice == 1) {
+                        System.out.println("Enter your name:");
+                        String playerName = scanner.nextLine();
 
-                System.out.println("1_ Two-Player Mode");
-                System.out.println("2_ Play Against AI");
-                System.out.println("3_ Exit Game");
-                System.out.print("What's your choice? ");
-                int choice = scanner.nextInt();
+                        int boardSize = 10;
+                        int maxShips = 2;
 
-                switch (choice) {
-                    case 1:
-                        match.twoPlayerMode();
-                        break;
-                    case 2:
-                        match.playAgainstAI();
-                        break;
-                    case 3:
-                        display.showTitle("Exiting program, Sayonara!");
-                        isExiting = true;
-                        break;
-                    default:
-                        display.showTitle("Invalid input, try again");
-                        break;
+                        Game game = new Game(playerName, "AI", boardSize, maxShips, false);
+                        game.start();
+                    } else if (choice == 2) {
+                        System.out.println("Enter Player 1 name:");
+                        String player1Name = scanner.nextLine();
+
+                        System.out.println("Enter Player 2 name:");
+                        String player2Name = scanner.nextLine();
+
+                        int boardSize = 10;
+                        int maxShips = 5;
+
+                        Game game = new Game(player1Name, player2Name, boardSize, maxShips, true);
+                        game.start();
+                    } else {
+                        System.out.println("Invalid choice.please try again");
+                    }
+
+                    scanner.close();
                 }
             }
-        }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
