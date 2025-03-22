@@ -12,6 +12,10 @@ public class Player {
         this.count=0;
 
     }
+
+    public Player(String name, int boardSize, int maxShips) {
+    }
+
     public String getName(){
         return name;
     }
