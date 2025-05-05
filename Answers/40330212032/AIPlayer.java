@@ -1,40 +1,60 @@
 import java.util.Random;
+
 public class AIPlayer extends Player {
     private Random random;
+    private int[][] possibleMoves;
+    private int movesLeft;
+
     public AIPlayer(String name, int boardSize, int maxShips) {
         super(name, boardSize, maxShips);
         this.random = new Random();
+        initializePossibleMoves(boardSize);
     }
-    public int[] makeMove() {
-        int row = random.nextInt(getBoard().getSize());
-        int col = random.nextInt(getBoard().getSize());
-        return new int[]{row, col};
+
+    private void initializePossibleMoves(int boardSize) {
+        possibleMoves = new int[boardSize * boardSize][2];
+        movesLeft = boardSize * boardSize;
+
+        int index = 0;
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                possibleMoves[index][0] = i;
+                possibleMoves[index][1] = j;
+                index++;
+            }
+        }
     }
+
     public void placeShipsRandomly() {
-        for (int i = 0; i < getShips().length; i++) {
+        int[] shipSizes = {5, 4, 3, 3, 2};
+
+        for (int size : shipSizes) {
             boolean placed = false;
             while (!placed) {
-                Shiplacer ship = new Shiplacer(random.nextInt(3) + 2);
+                Ship ship = new Ship(size);
                 ship.setRandomPosition(getBoard().getSize());
-                if (canPlaceShip(ship)) {  addShip(ship);
-                    placeShipOnBoard(ship);
+
+                if (getBoard().canPlaceShip(ship)) {
+                    getBoard().placeShip(ship);
+                    ships[shipCount++] = ship;
                     placed = true;
                 }
             }
         }
     }
-    public boolean canPlaceShip(Shiplacer ship) {
-        return getBoard().canPlaceShip(ship); }
 
-
-
-    private void placeShipOnBoard(Shiplacer ship) {
-        char[][] grid = getBoard().getGrid();
-        for (int i = ship.getStartRow(); i <= ship.getEndRow(); i++) {
-            for (int j = ship.getStartCol(); j <= ship.getEndCol(); j++) {
-                grid[i][j] = 'S';
-            }
+    public int[] makeMove() {
+        if (movesLeft <= 0) {
+            return new int[]{0, 0};
         }
+
+        int index = random.nextInt(movesLeft);
+        int[] move = possibleMoves[index];
+
+        // حذف حرکت استفاده شده
+        possibleMoves[index] = possibleMoves[movesLeft - 1];
+        movesLeft--;
+
+        return move;
     }
 }
-

@@ -1,102 +1,110 @@
 import java.util.Scanner;
 
 public class Game {
-
     private Player player1;
     private Player player2;
-    private boolean isGameOver;
     private boolean isTwoPlayerMode;
+    private Scanner scanner;
 
     public Game(String player1Name, String player2Name, int boardSize, int maxShips, boolean isTwoPlayerMode) {
-        this.player1 = new Player(player1Name, new Board(boardSize), maxShips);
+        this.player1 = new Player(player1Name, boardSize, maxShips);
         this.isTwoPlayerMode = isTwoPlayerMode;
+        this.scanner = new Scanner(System.in);
 
         if (isTwoPlayerMode) {
-            this.player2 = new Player(player2Name, new Board(boardSize), maxShips);
+            this.player2 = new Player(player2Name, boardSize, maxShips);
         } else {
             this.player2 = new AIPlayer(player2Name, boardSize, maxShips);
         }
-
-        this.isGameOver = false;
     }
 
     public void start() {
-        System.out.println("Welcome to BattleShip!");
-
+        System.out.println("  === SHIP PLACEMENT PHASE ===");
         placeShips(player1);
 
         if (isTwoPlayerMode) {
+            System.out.println("  === " + player2.getName() + "'s SHIP PLACEMENT ===");
             placeShips(player2);
         } else {
-            ((AIPlayer) player2).placeShipsRandomly();
+            ((AIPlayer)player2).placeShipsRandomly();
+            System.out.println("AI has placed its ships randomly.");
         }
 
-        while (!isGameOver) {
-            playTurn(player1, player2);
-            if (player2.ifSunks()) {
-                System.out.println(player1.getName() + " Wins!");
-                isGameOver = true;
+        System.out.println("  === BATTLE PHASE ===");
+        Player currentPlayer = player1;
+        Player opponent = player2;
+
+        while (true) {
+            playTurn(currentPlayer, opponent);
+
+            if (opponent.allShipsSunk()) {
+                System.out.println("  === GAME OVER ===");
+                System.out.println(currentPlayer.getName() + " WINS!");
                 break;
             }
 
-            playTurn(player2, player1);
-            if (player1.ifSunks()) {
-                System.out.println(player2.getName() + " Wins!");
-                isGameOver = true;
-            }
+            Player temp = currentPlayer;
+            currentPlayer = opponent;
+            opponent = temp;
+
+            System.out.println(" Press Enter to continue...");
+            scanner.nextLine();
         }
     }
 
     private void placeShips(Player player) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println(player.getName() + " Determine the location for the target.");
+        System.out.println("\n" + player.getName() + ", place your ships:");
+        int[] shipSizes = {5, 4, 3, 3, 2};
 
-        for (int i = 0; i < player.getShips().length; i++) {
-            System.out.println("Enter the starting row, starting col,(V=عمودی)(H=افقی), and ship size:");
-            int startRow = scanner.nextInt();
-            int startCol = scanner.nextInt();
-            String direction = scanner.next();
-            int size = scanner.nextInt();
+        for (int size : shipSizes) {
+            boolean placed = false;
+            while (!placed) {
+                System.out.println(" Your board:");
+                player.getBoard().print(true);
+                System.out.println(" Placing ship of size " + size);
 
-            int endRow = startRow;
-            int endCol = startCol;
+                System.out.println("Enter start row (0-9), start column (0-9), and direction (H/V):");
+                System.out.print("Example: 3 4 H (for horizontal at row 3, column 4): ");
 
-            if (direction.equalsIgnoreCase("H")) {
-                endCol = startCol + size - 1;
-            } else if (direction.equalsIgnoreCase("V")) {
-                endRow = startRow + size - 1;
-            }
+                int row = scanner.nextInt();
+                int col = scanner.nextInt();
+                String direction = scanner.next();
 
-            Shiplacer ship = new Shiplacer(size);
-            ship.setLocation(startRow, startCol, endRow, endCol);
+                placed = player.placeShip(row, col, direction, size);
 
-            if (player.getBoard().canPlaceShip(ship)) {
-                player.addShip(ship);
-                System.out.println("Ship placed successfully!!");
-            } else {
-                System.out.println("Invalid position.");
-                i--;
+                if (!placed) {
+                    System.out.println("Invalid position. Try again.");
+                }
             }
         }
     }
 
     private void playTurn(Player currentPlayer, Player opponent) {
-        Scanner scanner = new Scanner(System.in);
+        System.out.println(" === " + currentPlayer.getName() + "'s TURN ===");
+        System.out.println("Your board:");
+        currentPlayer.getBoard().print(true);
+        System.out.println(" Enemy board:");
+        opponent.getBoard().print(false);
 
-        if (currentPlayer instanceof AIPlayer) {
-            int[] move = ((AIPlayer) currentPlayer).makeMove();
-            System.out.println("AI attacking: (" + move[0] + ", " + move[1] + ")");
-            currentPlayer.attack(opponent, move[0], move[1]);
-        } else {
-            System.out.println(currentPlayer.getName() + "'s turn. Enter row and col to attack:");
-            int row = scanner.nextInt();
-            int col = scanner.nextInt();
+        boolean validMove = false;
+        while (!validMove) {
+            int[] move;
 
-            if (!currentPlayer.attack(opponent, row, col)) {
-                System.out.println("This move is invalid.");
+            if (currentPlayer instanceof AIPlayer) {
+                move = ((AIPlayer)currentPlayer).makeMove();
+                System.out.println("AI attacking: " + move[0] + " " + move[1]);
+            } else {
+                System.out.print("Enter attack coordinates (row column): ");
+                int row = scanner.nextInt();
+                int col = scanner.nextInt();
+                move = new int[]{row, col};
+            }
+
+            validMove = currentPlayer.attack(opponent, move[0], move[1]);
+
+            if (!validMove && !(currentPlayer instanceof AIPlayer)) {
+                System.out.println("Invalid move. Try again.");
             }
         }
     }
 }
-
-
