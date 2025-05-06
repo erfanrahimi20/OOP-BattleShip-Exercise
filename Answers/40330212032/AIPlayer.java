@@ -51,7 +51,7 @@ public class AIPlayer extends Player {
         int index = random.nextInt(movesLeft);
         int[] move = possibleMoves[index];
 
-        // حذف حرکت استفاده شده
+
         possibleMoves[index] = possibleMoves[movesLeft - 1];
         movesLeft--;
 

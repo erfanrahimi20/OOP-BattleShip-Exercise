@@ -19,7 +19,7 @@ public class Game {
     }
 
     public void start() {
-        System.out.println("  === SHIP PLACEMENT PHASE ===");
+        System.out.println("  === SHIP PLACEMENT PHASE === ");
         placeShips(player1);
 
         if (isTwoPlayerMode) {
